@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-untell"
-version = "0.1.0"
+version = "0.2.0"
 description = "Detect and remove AI writing tells (em dashes, AI vocabulary, chatbot artifacts, invisible Unicode, homoglyphs) from text and code; optional LLM humanizer to jam statistical watermarks."
 readme = "README.md"
 requires-python = ">=3.10"

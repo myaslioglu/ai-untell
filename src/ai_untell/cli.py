@@ -150,6 +150,8 @@ def scan(path: str | None, inline_text: str | None, as_json: bool, verbose: bool
 @click.option("--strip-emoji", is_flag=True)
 @click.option("--straighten-quotes", is_flag=True)
 @click.option("--remove-bold", is_flag=True)
+@click.option("--clean-strings", is_flag=True,
+              help="Also clean string literals in code (off by default: they are data).")
 @click.option("--json", "as_json", is_flag=True)
 def clean(
     path: str | None,
@@ -162,6 +164,7 @@ def clean(
     strip_emoji: bool,
     straighten_quotes: bool,
     remove_bold: bool,
+    clean_strings: bool,
     as_json: bool,
 ) -> None:
     """Clean AI tells from a file (or stdin with '-') using deterministic rules."""
@@ -171,6 +174,7 @@ def clean(
     text, file_path = _read_input(path, inline_text)
     config = _build_config(strength, em_dash, double_dash, strip_emoji,
                            straighten_quotes, remove_bold)
+    config.preserve_code_strings = not clean_strings
     result = Cleaner(config).clean(text, path=file_path)
 
     if in_place and file_path is not None:

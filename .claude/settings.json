@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "ai-untell": {
+      "source": {
+        "source": "github",
+        "repo": "myaslioglu/ai-untell"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ai-untell@ai-untell": true
+  }
+}

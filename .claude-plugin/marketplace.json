@@ -1,0 +1,19 @@
+{
+  "name": "ai-untell",
+  "owner": {
+    "name": "Murat Yaslioglu",
+    "url": "https://github.com/myaslioglu"
+  },
+  "metadata": {
+    "description": "ai-untell: detect and remove AI writing tells from text and code."
+  },
+  "plugins": [
+    {
+      "name": "ai-untell",
+      "source": "./",
+      "description": "Detect and remove AI writing tells (em dashes, AI vocabulary, chatbot openers/closers, invisible Unicode, homoglyphs) from text and code.",
+      "version": "0.2.0",
+      "category": "productivity"
+    }
+  ]
+}

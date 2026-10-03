@@ -1,0 +1,13 @@
+{
+  "name": "ai-untell",
+  "version": "0.2.0",
+  "description": "Detect and remove AI writing tells (em dashes, AI vocabulary, chatbot openers/closers, invisible Unicode, homoglyphs) from text and code, offline and dependency-free.",
+  "author": {
+    "name": "Murat Yaslioglu",
+    "url": "https://github.com/myaslioglu"
+  },
+  "homepage": "https://github.com/myaslioglu/ai-untell",
+  "repository": "https://github.com/myaslioglu/ai-untell",
+  "license": "MIT",
+  "keywords": ["writing", "ai-detection", "humanizer", "em-dash", "watermark"]
+}

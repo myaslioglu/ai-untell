@@ -1,6 +1,9 @@
 """Rule loading and matching engine.
 
-Rules live in YAML files under ``patterns/rules/``. Each rule is a regex with
+Rules live in YAML files under ``patterns/rules/``. The Claude skill bundle
+ships the same rules as JSON (built by ``tools/build_skill.py``) so it runs on
+the standard library alone; JSON files are preferred when present. Each rule is
+a regex with
 metadata: category, severity, replacement options, scope (prose / code
 natural-language / any) and the minimum synonym strength at which its
 replacement is applied. Detection is always active; replacement is gated by
@@ -8,11 +11,10 @@ replacement is applied. Detection is always active; replacement is gated by
 """
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-
-import yaml
 
 from ai_untell.types import TellCategory, TellHit
 
@@ -50,29 +52,40 @@ class PatternEngine:
     def load(self) -> "PatternEngine":
         if self._loaded:
             return self
-        for yml_path in sorted(self.rules_dir.glob("*.yml")):
-            data = yaml.safe_load(yml_path.read_text(encoding="utf-8")) or []
-            for entry in data:
-                flags = 0
-                for ch in entry.get("flags", ""):
-                    flags |= _FLAG_MAP.get(ch, 0)
-                category = TellCategory(entry["category"])
-                self.rules.append(
-                    Rule(
-                        id=str(entry["id"]),
-                        category=category,
-                        severity=int(entry.get("severity", 2)),
-                        pattern=entry["pattern"],
-                        regex=re.compile(entry["pattern"], flags),
-                        replacements=list(entry.get("replacements") or []),
-                        note=entry.get("note", ""),
-                        scope=entry.get("scope", "any"),
-                        min_strength=entry.get("min_strength", "light"),
-                        action=entry.get("action", "replace"),
-                    )
+        for entry in self._read_entries():
+            flags = 0
+            for ch in entry.get("flags", ""):
+                flags |= _FLAG_MAP.get(ch, 0)
+            category = TellCategory(entry["category"])
+            self.rules.append(
+                Rule(
+                    id=str(entry["id"]),
+                    category=category,
+                    severity=int(entry.get("severity", 2)),
+                    pattern=entry["pattern"],
+                    regex=re.compile(entry["pattern"], flags),
+                    replacements=list(entry.get("replacements") or []),
+                    note=entry.get("note", ""),
+                    scope=entry.get("scope", "any"),
+                    min_strength=entry.get("min_strength", "light"),
+                    action=entry.get("action", "replace"),
                 )
+            )
         self._loaded = True
         return self
+
+    def _read_entries(self) -> list[dict]:
+        json_paths = sorted(self.rules_dir.glob("*.json"))
+        if json_paths:
+            files = [json.loads(p.read_text(encoding="utf-8")) for p in json_paths]
+        else:
+            import yaml
+
+            files = [
+                yaml.safe_load(p.read_text(encoding="utf-8"))
+                for p in sorted(self.rules_dir.glob("*.yml"))
+            ]
+        return [entry for data in files for entry in (data or [])]
 
     def by_category(self, category: TellCategory) -> list[Rule]:
         self.load()

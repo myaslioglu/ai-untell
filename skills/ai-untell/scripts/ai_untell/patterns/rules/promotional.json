@@ -1,0 +1,91 @@
+[
+  {
+    "id": "PROMO-001",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\boffers? (?:a|an) (?:wide range of|comprehensive|seamless|unique|holistic)\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-002",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\brich (?:cultural )?(?:heritage|tapestry|history)\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-003",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\bhidden gem\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-004",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\bthere(?:'s| is) something for everyone\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-005",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\belevate your\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-006",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\btake[s]? [^.!?\\n]{0,40} to the next level\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-007",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\bunlock(?:s|ing)? the (?:full )?potential\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-008",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\bworld of possibilities\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-009",
+    "category": "promotional",
+    "severity": 1,
+    "pattern": "\\bwhether you(?:'re| are) (?:a|an) \\b",
+    "flags": "i",
+    "action": "flag",
+    "note": "classic \"whether you're a beginner or a pro\" closer"
+  },
+  {
+    "id": "PROMO-010",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\bmust[- ](?:visit|see|try|have|read)\\b",
+    "flags": "i",
+    "action": "flag"
+  },
+  {
+    "id": "PROMO-011",
+    "category": "promotional",
+    "severity": 2,
+    "pattern": "\\bembark on (?:a|an)? ?(?:journey|adventure|experience)\\b",
+    "flags": "i",
+    "action": "flag"
+  }
+]
