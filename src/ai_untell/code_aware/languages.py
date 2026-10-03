@@ -1,6 +1,7 @@
 """Language and content-kind detection."""
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from ai_untell.types import ContentKind, LanguageId
@@ -31,6 +32,29 @@ TEXT_EXTENSIONS = {".txt", ".text", ".rst", ".adoc", ".tex"}
 
 _FENCE_MARKER = ("```", "~~~")
 
+# Line-anchored syntax probes. Bare words such as "from", "class" or
+# "function" are common in English prose, so a probe only fires on real
+# syntax at the start of a line.
+_PY_DEF = re.compile(r"(?m)^[ \t]*(?:async[ \t]+)?def[ \t]+\w+[ \t]*\(")
+_PY_IMPORT = re.compile(r"(?m)^(?:import[ \t]+[\w.]+|from[ \t]+[\w.]+[ \t]+import[ \t])")
+_PY_CLASS = re.compile(r"(?m)^class[ \t]+\w+[ \t]*[:(]")
+_GO_PACKAGE = re.compile(r"(?m)^package[ \t]+\w+[ \t]*$")
+_GO_FUNC = re.compile(r"(?m)^func[ \t]+(?:\([^)]*\)[ \t]*)?\w+[ \t]*\(")
+_RUST_FN = re.compile(r"(?m)^[ \t]*(?:pub(?:\([^)]*\))?[ \t]+)?fn[ \t]+\w+")
+_RUST_USE = re.compile(r"(?m)^use[ \t]+(?:std|crate|super)::")
+_C_INCLUDE = re.compile(r"(?m)^#[ \t]*include[ \t]*[<\"]")
+_JAVA_CLASS = re.compile(r"(?m)^[ \t]*(?:public|private|protected)[ \t]+(?:static[ \t]+)?"
+                         r"(?:final[ \t]+)?(?:class|interface|void)[ \t]+\w+")
+_JS_FUNC = re.compile(r"(?m)^[ \t]*(?:export[ \t]+)?(?:async[ \t]+)?"
+                      r"function[ \t]*\*?[ \t]*\w*[ \t]*\(")
+_JS_MODULE = re.compile(r"(?m)^(?:const|let|var)[ \t]+\w+[ \t]*=[ \t]*require\("
+                        r"|^import[ \t].*[ \t]from[ \t]+['\"]"
+                        r"|^export[ \t]+(?:default|const|function|class)")
+_CODE_PROBES = (
+    _PY_DEF, _PY_IMPORT, _PY_CLASS, _GO_PACKAGE, _GO_FUNC, _RUST_FN, _RUST_USE,
+    _C_INCLUDE, _JAVA_CLASS, _JS_FUNC, _JS_MODULE,
+)
+
 
 def detect_language(text: str, path: Path | None = None) -> LanguageId:
     """Detect the programming language from extension, shebang or content."""
@@ -49,18 +73,20 @@ def detect_language(text: str, path: Path | None = None) -> LanguageId:
             return LanguageId.UNKNOWN
 
     head = text[:4000]
-    if "def " in head and ("import " in head or "from " in head):
+    if _PY_DEF.search(head) and (_PY_IMPORT.search(head) or _PY_CLASS.search(head)):
         return LanguageId.PYTHON
-    if "\npackage main" in head or head.startswith("package "):
+    if _GO_PACKAGE.search(head) and _GO_FUNC.search(head):
         return LanguageId.GO
-    if "fn main(" in head or "\nuse std::" in head:
+    if _RUST_FN.search(head) and (_RUST_USE.search(head) or "fn main(" in head):
         return LanguageId.RUST
-    if "#include" in head:
+    if _C_INCLUDE.search(head):
         return LanguageId.CPP
-    if "public class " in head or "private static void" in head:
+    if _JAVA_CLASS.search(head):
         return LanguageId.JAVA
-    if "function " in head or "const " in head and "require(" in head:
+    if _JS_FUNC.search(head) or _JS_MODULE.search(head):
         return LanguageId.JAVASCRIPT
+    if _PY_IMPORT.search(head) or _PY_DEF.search(head):
+        return LanguageId.PYTHON
     return LanguageId.UNKNOWN
 
 
@@ -90,17 +116,11 @@ def detect_content_kind(text: str, path: Path | None = None) -> ContentKind:
 
 def _looks_like_code(text: str) -> bool:
     head = text[:4000]
-    signals = 0
-    for probe in ("import ", "from ", "def ", "class ", "function ", "const ",
-                  "package ", "#include", "fn ", "use std::", "public class "):
-        if probe in head:
-            signals += 1
+    signals = sum(1 for probe in _CODE_PROBES if probe.search(head))
     return signals >= 2
 
 
 def _looks_like_markdown(text: str) -> bool:
-    import re
-
     head = text[:4000]
     headings = len(re.findall(r"(?m)^#{1,6}\s+\S", head))
     bolds = head.count("**")

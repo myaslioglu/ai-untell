@@ -11,7 +11,7 @@ from pathlib import Path
 
 from ai_untell.cleaner import Cleaner
 from ai_untell.code_aware.languages import detect_content_kind, detect_language
-from ai_untell.llm.base import LLMProvider, get_provider
+from ai_untell.llm.base import LLMError, LLMProvider, get_provider
 from ai_untell.scanner import Scanner
 from ai_untell.types import CleanResult, Config, ContentKind, LanguageId
 from ai_untell.unicode_ops import latin_ratio, normalize_homoglyphs, strip_invisible
@@ -39,6 +39,15 @@ Hard rules:
 """
 
 
+def _output_budget(text: str, provider: LLMProvider) -> int:
+    """Output-token budget: roughly 2x the input's token count, never below 4096.
+
+    English averages ~4 characters per token, so ``len / 2`` leaves room for a
+    rewrite somewhat longer than the source.
+    """
+    return max(4096, min(provider.max_output_tokens, len(text) // 2))
+
+
 class Humanizer:
     """Rewrites text to remove AI tells, using an LLM when available."""
 
@@ -57,11 +66,8 @@ class Humanizer:
             return self._provider
         if not self.config.use_llm:
             return None
-        try:
-            self._provider = get_provider(self.config.llm_provider, self.config.llm_model)
-            return self._provider
-        except Exception:
-            return None
+        self._provider = get_provider(self.config.llm_provider, self.config.llm_model)
+        return self._provider
 
     def humanize(
         self,
@@ -73,13 +79,15 @@ class Humanizer:
         kind = content_kind or detect_content_kind(text, path)
         lang = language or detect_language(text, path)
 
-        provider = self._get_provider()
-        if provider is not None:
-            try:
+        try:
+            provider = self._get_provider()
+            if provider is not None:
                 return self._humanize_with_llm(text, provider, kind, lang)
-            except Exception:
-                # Fall through to rule-based cleaning on any provider error.
-                pass
+        except Exception as exc:
+            if not self.config.llm_fallback:
+                if isinstance(exc, LLMError):
+                    raise
+                raise LLMError(f"LLM rewrite failed: {exc}") from exc
         return self._humanize_rules(text, kind, lang)
 
     # -- LLM path --------------------------------------------------------------
@@ -106,8 +114,10 @@ class Humanizer:
                 stats["homoglyphs_fixed"] = n
 
         prompt = self._build_prompt(work, kind, lang)
-        rewritten = provider.rewrite(HUMANIZE_SYSTEM_PROMPT, prompt)
-        rewritten = self._postprocess(rewritten)
+        rewritten = provider.rewrite(
+            HUMANIZE_SYSTEM_PROMPT, prompt, max_tokens=_output_budget(work, provider)
+        )
+        rewritten = self._postprocess(rewritten, source=work)
         stats["llm_rewritten"] = 1
 
         report = self._scanner.scan(rewritten, kind, lang)
@@ -133,10 +143,12 @@ class Humanizer:
             f"--- BEGIN TEXT ---\n{text}\n--- END TEXT ---"
         )
 
-    def _postprocess(self, text: str) -> str:
-        # Strip a leading fence some models wrap around the whole answer.
+    def _postprocess(self, text: str, source: str = "") -> str:
+        # Strip a leading fence some models wrap around the whole answer, but
+        # only when the source itself did not start with a fence.
         stripped = text.strip()
-        if stripped.startswith("```") and stripped.count("```") >= 2:
+        wrapped = not source.lstrip().startswith("```")
+        if wrapped and stripped.startswith("```") and stripped.count("```") >= 2:
             first_newline = stripped.find("\n")
             inner = stripped[first_newline + 1 :]
             last_fence = inner.rfind("```")

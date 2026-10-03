@@ -18,12 +18,15 @@ def split_markdown(text: str) -> list[Segment]:
     pos = 0
     n = len(text)
 
-    # First pass: locate fenced code blocks line by line.
+    # First pass: locate fenced code blocks line by line (CommonMark rules:
+    # the closing fence uses the same character and is at least as long as
+    # the opening one; an unclosed fence runs to the end of the document).
     fence_spans: list[tuple[int, int, str]] = []  # (start, end, info)
     lines = text.split("\n")
     offset = 0
     in_fence = False
-    fence_marker = ""
+    fence_char = ""
+    fence_len = 0
     fence_start = 0
     fence_info = ""
     for line in lines:
@@ -32,15 +35,21 @@ def split_markdown(text: str) -> list[Segment]:
             m = re.match(r"^(`{3,}|~{3,})(.*)$", stripped)
             if m:
                 in_fence = True
-                fence_marker = m.group(1)[0] * 3
+                fence_char = m.group(1)[0]
+                fence_len = len(m.group(1))
                 fence_info = m.group(2).strip()
                 fence_start = offset
-        else:
-            if stripped.startswith(fence_marker) and set(stripped) <= {fence_marker[0]}:
-                end = offset + len(line)
-                fence_spans.append((fence_start, end, fence_info))
-                in_fence = False
+        elif (
+            len(stripped) >= fence_len
+            and stripped.startswith(fence_char * fence_len)
+            and set(stripped) == {fence_char}
+        ):
+            end = offset + len(line)
+            fence_spans.append((fence_start, end, fence_info))
+            in_fence = False
         offset += len(line) + 1
+    if in_fence:
+        fence_spans.append((fence_start, n, fence_info))
 
     for start, end, _info in fence_spans:
         if start > pos:

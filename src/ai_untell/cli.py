@@ -11,6 +11,7 @@ from rich.table import Table
 
 from ai_untell.cleaner import Cleaner
 from ai_untell.humanizer import Humanizer
+from ai_untell.llm.base import LLMError
 from ai_untell.scanner import Scanner
 from ai_untell.types import Config
 
@@ -206,6 +207,8 @@ def clean(
 @click.option("--provider", type=click.Choice(["anthropic", "openai", "ollama"]),
               default="anthropic")
 @click.option("--model", default=None, help="Model name for the provider.")
+@click.option("--fallback", is_flag=True,
+              help="If the LLM call fails, fall back to rule-based cleaning instead of erroring.")
 @click.option("--in-place", is_flag=True)
 @click.option("--no-backup", is_flag=True)
 @click.option("--strength", type=click.Choice(["off", "light", "moderate", "aggressive"]))
@@ -216,6 +219,7 @@ def humanize(
     use_llm: bool,
     provider: str,
     model: str | None,
+    fallback: bool,
     in_place: bool,
     no_backup: bool,
     strength: str | None,
@@ -227,7 +231,11 @@ def humanize(
 
     text, file_path = _read_input(path, inline_text)
     config = _build_config(strength=strength, use_llm=use_llm, provider=provider, model=model)
-    result = Humanizer(config).humanize(text, path=file_path)
+    config.llm_fallback = fallback
+    try:
+        result = Humanizer(config).humanize(text, path=file_path)
+    except LLMError as exc:
+        raise click.ClickException(f"{exc} (nothing was written)") from exc
 
     if in_place and file_path is not None:
         changed = result.cleaned != text

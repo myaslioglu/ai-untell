@@ -19,7 +19,7 @@ class CodeSegment:
     ``content_start``/``content_end`` cover only the editable text inside.
     """
 
-    kind: str  # "line_comment" | "block_comment" | "string"
+    kind: str  # "line_comment" | "block_comment" | "docstring" | "string"
     start: int
     end: int
     content_start: int
@@ -118,6 +118,8 @@ def extract_segments(text: str, spec: LangSpec) -> list[CodeSegment]:
             if text.startswith(prefix, i):
                 if prefix == "#" and i > 0 and _ident_char(text[i - 1]):
                     break  # e.g. something#tag - not a comment
+                if prefix == "//" and i > 0 and text[i - 1] == ":":
+                    break  # URL scheme (https://...), not a comment
                 end = text.find("\n", i)
                 end = n if end == -1 else end
                 segments.append(
@@ -182,7 +184,13 @@ def extract_segments(text: str, spec: LangSpec) -> list[CodeSegment]:
                     break
                 j += 1
             full_end = min(end + 3, n)
-            segments.append(CodeSegment("string", i, full_end, i + 3, end))
+            # A triple-quoted string that stands alone on its line (optionally
+            # with an r/u prefix) is a docstring; one used in an expression
+            # (x = """...""", f("""...""")) is program data.
+            line_start = text.rfind("\n", 0, i) + 1
+            prefix = text[line_start:i].strip()
+            kind = "docstring" if prefix in ("", "r", "R", "u", "U") else "string"
+            segments.append(CodeSegment(kind, i, full_end, i + 3, end))
             i = full_end
             continue
 

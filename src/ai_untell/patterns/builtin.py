@@ -10,19 +10,24 @@ import re
 
 # --- Chatbot openers (anchored at paragraph start) -------------------------
 OPENER_PATTERNS: list[re.Pattern] = [
+    # Bare interjections only count when punctuation follows, so ordinary
+    # sentences ("Surely this...", "Of course the server...") are left alone.
     re.compile(
-        r"^(?:certainly|sure|sure thing|of course|absolutely|great question"
-        r"|good question|excellent question|thanks for (?:asking|the question"
-        r"|your question)|thank you for (?:asking|the question|reaching out))"
-        r"\s*[!.]?\s*",
+        r"^(?:certainly|sure thing|sure|of course|absolutely)\s*[!.,]\s*",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"^(?:(?:great|good|excellent) question"
+        r"|thanks for (?:asking|the question|your question)"
+        r"|thank you for (?:asking|the question|reaching out))\b\s*[!.,]?\s*",
         re.IGNORECASE,
     ),
     re.compile(
         r"^i(?:'d| would) be (?:happy|glad) to (?:help|assist|explain"
-        r"|walk you through|help you with)[^.!?\n]{0,100}[.!]\s*",
+        r"|walk you through|help you with)\b[^.!?\n]{0,100}[.!]\s*",
         re.IGNORECASE,
     ),
-    re.compile(r"^(?:i(?:'m| am) )?happy to help[!.]?\s*", re.IGNORECASE),
+    re.compile(r"^(?:i(?:'m| am) )?happy to help\b[!.]?\s*", re.IGNORECASE),
     re.compile(
         r"^here(?:'s| is) (?:a |an |the )?(?:detailed |comprehensive "
         r"|step-by-step |quick |complete )?(?:explanation|overview|summary"
@@ -34,30 +39,43 @@ OPENER_PATTERNS: list[re.Pattern] = [
 ]
 
 # --- Chatbot closers (anchored at paragraph end) ---------------------------
+# Each closer must start its own sentence: removing "if you have any
+# questions" from "Contact the team if you have any questions." would leave a
+# fragment behind.
+_SENTENCE_START = r"(?:^|(?<=[.!?:])\s+)"
+
 CLOSER_PATTERNS: list[re.Pattern] = [
     re.compile(
-        r"\s*let me know if you (?:have|need|want|require)[^.!?\n]{0,100}[.!]?$",
+        _SENTENCE_START + r"let me know if you (?:have|need|want|require)[^.!?\n]{0,100}[.!]?$",
         re.IGNORECASE,
     ),
-    re.compile(r"\s*i hope this (?:helps|answers your question)[!.]?$", re.IGNORECASE),
     re.compile(
-        r"\s*feel free to (?:ask|reach out|contact|let me know|share)"
+        _SENTENCE_START + r"i hope this (?:helps|answers your question)[!.]?$",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        _SENTENCE_START + r"feel free to (?:ask|reach out|contact|let me know|share)"
         r"[^.!?\n]{0,100}[.!]?$",
         re.IGNORECASE,
     ),
     re.compile(
-        r"\s*if you have any (?:more |further |other |additional )?questions"
+        _SENTENCE_START + r"if you have any (?:more |further |other |additional )?questions"
         r"[^.!?\n]{0,100}[.!]?$",
         re.IGNORECASE,
     ),
-    re.compile(r"\s*don(?:'t| do) hesitate to (?:ask|reach out)[^.!?\n]{0,100}[.!]?$",
-               re.IGNORECASE),
+    re.compile(
+        _SENTENCE_START + r"don(?:'t| do) hesitate to (?:ask|reach out)[^.!?\n]{0,100}[.!]?$",
+        re.IGNORECASE,
+    ),
 ]
 
 # --- Knowledge-cutoff / AI-identity disclaimers ----------------------------
 CUTOFF_RE = re.compile(
     r"\b(?:as an ai|as an artificial intelligence|i(?:'m| am) (?:just )?an ai"
-    r"|language model|my knowledge (?:cutoff|cut-off|is limited)"
+    # Only first-person / self-describing uses: "a language model" alone is
+    # ordinary technical vocabulary.
+    r"|as an? (?:large )?language model|i(?:'m| am) (?:just )?an? (?:large )?language model"
+    r"|my knowledge (?:cutoff|cut-off|is limited)"
     r"|i do(?:n't| not) have (?:access to )?real[- ]time"
     r"|as of my (?:last )?(?:knowledge|training) (?:cutoff|cut-off|update)"
     r"|my training data (?:cutoff|only|does)|i cannot (?:browse|access) the internet"
@@ -84,3 +102,24 @@ SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"'(])")
 
 # --- Markdown fences and inline code ---------------------------------------
 INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
+
+# --- Double hyphen used as a dash ---------------------------------------------
+DOUBLE_HYPHEN_RE = re.compile(r"(?<!-)--(?!-)")
+_TABLE_SEPARATOR_RE = re.compile(r"^\s*\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)+\|?\s*$")
+
+
+def is_dash_double_hyphen(text: str, m: re.Match) -> bool:
+    """True when a ``--`` match is prose punctuation, not syntax.
+
+    Excluded: command-line flags (``--in-place``: line start or whitespace
+    before, a letter right after) and markdown table separators (``|--|--|``).
+    """
+    start, end = m.start(), m.end()
+    before = text[start - 1] if start > 0 else "\n"
+    after = text[end] if end < len(text) else ""
+    if (before.isspace() or before in "([\"'") and after.isalpha():
+        return False
+    line_start = text.rfind("\n", 0, start) + 1
+    line_end = text.find("\n", end)
+    line = text[line_start : line_end if line_end != -1 else len(text)]
+    return not _TABLE_SEPARATOR_RE.match(line)

@@ -45,8 +45,8 @@ def test_python_docstring_extraction():
     code = 'def f():\n    """Docstring text."""\n    return 1\n'
     spec = get_spec(LanguageId.PYTHON)
     segs = extract_segments(code, spec)
-    strings = [s for s in segs if s.kind == "string"]
-    assert any("Docstring" in code[s.content_start:s.content_end] for s in strings)
+    docstrings = [s for s in segs if s.kind == "docstring"]
+    assert any("Docstring" in code[s.content_start:s.content_end] for s in docstrings)
 
 
 def test_js_block_comment_extraction():

@@ -10,10 +10,12 @@ from ai_untell.code_aware.markdown import fence_language, split_markdown
 from ai_untell.patterns.builtin import (
     CLOSER_PATTERNS,
     CUTOFF_RE,
+    DOUBLE_HYPHEN_RE,
     EMOJI_RE,
     INLINE_CODE_RE,
     OPENER_PATTERNS,
     SENTENCE_SPLIT_RE,
+    is_dash_double_hyphen,
 )
 from ai_untell.patterns.loader import PatternEngine
 from ai_untell.scorer import compute_ai_score
@@ -30,7 +32,6 @@ from ai_untell.unicode_ops import INVISIBLE_CHAR_NAMES, find_homoglyphs, find_in
 SPACED_EM_DASH_RE = re.compile(r"\s\u2014\s")
 UNSPACED_EM_DASH_RE = re.compile(r"\w\u2014\w")
 DOUBLE_EM_RE = re.compile(r"\u2014{2,}")
-DOUBLE_HYPHEN_RE = re.compile(r"(?<!-)--(?!-)")
 CURLY_QUOTE_RE = re.compile("[\u201c\u201d\u2018\u2019]")
 BOLD_RE = re.compile(r"\*\*[^*\n]+\*\*")
 HEADING_RE = re.compile(r"(?m)^#{1,6}\s+\S")
@@ -128,7 +129,8 @@ class Scanner:
             if not any(h.span[0] <= offset + m.start() < h.span[1] for h in hits):
                 hits.append(self._hit(TellCategory.DASH_OVERUSE, 1, m, offset, "DASH-103"))
         for m in DOUBLE_HYPHEN_RE.finditer(masked):
-            hits.append(self._hit(TellCategory.DASH_OVERUSE, 2, m, offset, "DASH-104"))
+            if is_dash_double_hyphen(masked, m):
+                hits.append(self._hit(TellCategory.DASH_OVERUSE, 2, m, offset, "DASH-104"))
 
         for m in EMOJI_RE.finditer(masked):
             hits.append(self._hit(TellCategory.EMOJI_FORMATTING, 1, m, offset, "EMOJI-101"))
@@ -183,9 +185,11 @@ class Scanner:
                                 m.group(0).strip(), 3, "CHAT-102")
                     )
                     break
+        cursor = 0
         for sentence in SENTENCE_SPLIT_RE.split(text):
+            idx = text.find(sentence, cursor)
+            cursor = idx + len(sentence)
             if CUTOFF_RE.search(sentence):
-                idx = text.find(sentence)
                 hits.append(
                     TellHit(TellCategory.KNOWLEDGE_CUTOFF,
                             (offset + idx, offset + idx + len(sentence)),
@@ -206,10 +210,10 @@ class Scanner:
             content = text[segment.content_start : segment.content_end]
             if not content.strip():
                 continue
-            base = offset + segment.content_start
-            hits.extend(self.engine.match(content, scope="code_nl", offset=base))
             if segment.kind == "string" and self.config.preserve_code_strings:
                 continue
+            base = offset + segment.content_start
+            hits.extend(self.engine.match(content, scope="code_nl", offset=base))
             for m in EMOJI_RE.finditer(content):
                 hits.append(self._hit(TellCategory.EMOJI_FORMATTING, 1, m, base, "EMOJI-102"))
             for m in SPACED_EM_DASH_RE.finditer(content):

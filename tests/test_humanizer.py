@@ -49,7 +49,7 @@ def test_fallback_on_provider_error():
         def rewrite(self, system, prompt, *, max_tokens=4096, temperature=0.7):
             raise RuntimeError("boom")
 
-    humanizer = Humanizer(Config(use_llm=True), provider=BrokenProvider())
+    humanizer = Humanizer(Config(use_llm=True, llm_fallback=True), provider=BrokenProvider())
     result = humanizer.humanize("Let's delve into it \u2014 now.")
     assert result.mode == "rules"
 

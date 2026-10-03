@@ -127,14 +127,19 @@ class Config:
     # Rule-based rewriting
     synonym_strength: Literal["off", "light", "moderate", "aggressive"] = "light"
 
-    # Code handling
+    # Code handling. String literals are program data (CLI flags, regexes,
+    # dict keys, SQL), so they are left alone unless explicitly opted in.
+    # Docstrings and comments are always treated as natural language.
     preserve_code_identifiers: bool = True
-    preserve_code_strings: bool = False
+    preserve_code_strings: bool = True
 
     # LLM humanizer layer
     use_llm: bool = False
     llm_provider: Literal["anthropic", "openai", "ollama"] = "anthropic"
     llm_model: str | None = None
+    # When the LLM call fails, fall back to rule-based cleaning instead of
+    # raising. Off by default so a failed rewrite is never silently replaced.
+    llm_fallback: bool = False
 
     # Scoring
     ai_score_threshold: float = 0.5
