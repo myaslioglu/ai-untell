@@ -1,0 +1,72 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ai-untell: Scan active file",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["scan", "${file}"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"},
+      "group": {"kind": "build", "isDefault": false}
+    },
+    {
+      "label": "ai-untell: Clean active file (preview)",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["clean", "${file}"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"},
+      "group": {"kind": "build", "isDefault": false}
+    },
+    {
+      "label": "ai-untell: Clean active file (in-place + backup)",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["clean", "${file}", "--in-place", "--strength", "moderate"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"},
+      "group": {"kind": "build", "isDefault": false}
+    },
+    {
+      "label": "ai-untell: Humanize active file (rules)",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["humanize", "${file}"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    },
+    {
+      "label": "ai-untell: Humanize active file (LLM + in-place)",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["humanize", "${file}", "--llm", "--provider", "anthropic", "--in-place"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    },
+    {
+      "label": "ai-untell: Scan selected text",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["scan", "--text", "${selectedText}"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    },
+    {
+      "label": "ai-untell: Clean selected text",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["clean", "--text", "${selectedText}"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    },
+    {
+      "label": "ai-untell: Demo",
+      "type": "shell",
+      "command": "ai-untell",
+      "args": ["demo"],
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    }
+  ]
+}

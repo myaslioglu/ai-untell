@@ -1,0 +1,74 @@
+# Significance/legacy inflation phrases.
+
+- id: SIG-001
+  category: significance_inflation
+  severity: 2
+  pattern: '\bmarks? (?:a|an) (?:pivotal|significant|crucial|key|major|new|profound) (?:moment|era|shift|milestone|turning point|chapter|step)\b'
+  flags: i
+  action: flag
+- id: SIG-002
+  category: significance_inflation
+  severity: 2
+  pattern: '\bplays? (?:a|an) (?:pivotal|crucial|vital|key|important|significant|central|fundamental) role\b'
+  flags: i
+  action: flag
+- id: SIG-003
+  category: significance_inflation
+  severity: 2
+  pattern: '\bsets? the stage for\b'
+  flags: i
+  action: flag
+- id: SIG-004
+  category: significance_inflation
+  severity: 2
+  pattern: '\bshap(?:e|es|ing|ed) the future of\b'
+  flags: i
+  action: flag
+- id: SIG-005
+  category: significance_inflation
+  severity: 2
+  pattern: '\b(?:a|an) (?:lasting|indelible) (?:mark|impact|legacy|impression)\b'
+  flags: i
+  action: flag
+- id: SIG-006
+  category: significance_inflation
+  severity: 1
+  pattern: '\bcannot be (?:understated|overstated)\b'
+  flags: i
+  action: flag
+- id: SIG-007
+  category: significance_inflation
+  severity: 3
+  pattern: '\bstands as a testament\b'
+  flags: i
+  action: flag
+- id: SIG-008
+  category: significance_inflation
+  severity: 1
+  pattern: '\bis more than (?:just )?(?:a|an)\b'
+  flags: i
+  action: flag
+- id: SIG-009
+  category: significance_inflation
+  severity: 2
+  pattern: '\brepresents? (?:a|an) (?:significant|major|pivotal|fundamental|profound) (?:shift|step|milestone|change|moment)\b'
+  flags: i
+  action: flag
+- id: SIG-010
+  category: significance_inflation
+  severity: 1
+  pattern: '\b(?:evolving|dynamic|rapidly changing) landscape\b'
+  flags: i
+  action: flag
+- id: SIG-011
+  category: significance_inflation
+  severity: 2
+  pattern: '\bfocal point\b'
+  flags: i
+  action: flag
+- id: SIG-012
+  category: significance_inflation
+  severity: 1
+  pattern: '\bdeeply rooted\b'
+  flags: i
+  action: flag

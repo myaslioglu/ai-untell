@@ -1,0 +1,483 @@
+# AI vocabulary tells (single words / short phrases).
+# severity 3 = blatant AI word (replaced even in "light" mode)
+# severity 2 = strong tell (replaced from "moderate" mode up)
+# scope: prose = only in prose segments (never inside code identifiers)
+
+- id: VOCAB-001
+  category: ai_vocab
+  severity: 3
+  pattern: '\bdelve into\b'
+  flags: i
+  replacements: ['dig into', 'look into', 'go through']
+  min_strength: light
+- id: VOCAB-001b
+  category: ai_vocab
+  severity: 3
+  pattern: '\bdelves into\b'
+  flags: i
+  replacements: ['looks into']
+  min_strength: light
+- id: VOCAB-001c
+  category: ai_vocab
+  severity: 3
+  pattern: '\bdelving into\b'
+  flags: i
+  replacements: ['looking into']
+  min_strength: light
+- id: VOCAB-002
+  category: ai_vocab
+  severity: 3
+  pattern: '\bdelve\b'
+  flags: i
+  replacements: ['dig', 'look', 'search']
+  min_strength: moderate
+- id: VOCAB-003
+  category: ai_vocab
+  severity: 3
+  pattern: '\bleverage(?:s|d|ing)?\b'
+  flags: i
+  replacements: ['use', 'rely on']
+  min_strength: light
+- id: VOCAB-004
+  category: ai_vocab
+  severity: 3
+  pattern: '\butilize\b'
+  flags: i
+  replacements: ['use']
+  min_strength: light
+- id: VOCAB-005
+  category: ai_vocab
+  severity: 2
+  pattern: '\bfoster\b'
+  flags: i
+  replacements: ['encourage', 'build']
+  min_strength: moderate
+- id: VOCAB-006
+  category: ai_vocab
+  severity: 2
+  pattern: '\bfacilitate\b'
+  flags: i
+  replacements: ['help', 'ease']
+  min_strength: moderate
+- id: VOCAB-007
+  category: ai_vocab
+  severity: 2
+  pattern: '\bstreamline\b'
+  flags: i
+  replacements: ['simplify', 'speed up']
+  min_strength: moderate
+- id: VOCAB-008
+  category: ai_vocab
+  severity: 2
+  pattern: '\bharness\b'
+  flags: i
+  replacements: ['use', 'tap into']
+  min_strength: moderate
+- id: VOCAB-009
+  category: ai_vocab
+  severity: 2
+  pattern: '\bembark on\b'
+  flags: i
+  replacements: ['start', 'begin']
+  min_strength: light
+- id: VOCAB-010
+  category: ai_vocab
+  severity: 2
+  pattern: '\bunleash\b'
+  flags: i
+  replacements: ['release', 'open up']
+  min_strength: moderate
+- id: VOCAB-011
+  category: ai_vocab
+  severity: 2
+  pattern: '\bunlock\b'
+  flags: i
+  scope: prose
+  replacements: ['open', 'release']
+  min_strength: aggressive
+- id: VOCAB-012
+  category: ai_vocab
+  severity: 2
+  pattern: '\belevate\b'
+  flags: i
+  scope: prose
+  replacements: ['lift', 'raise']
+  min_strength: moderate
+- id: VOCAB-013
+  category: ai_vocab
+  severity: 2
+  pattern: '\bempower\b'
+  flags: i
+  scope: prose
+  replacements: ['help', 'enable']
+  min_strength: moderate
+- id: VOCAB-014
+  category: ai_vocab
+  severity: 3
+  pattern: '\brevolutionize\b'
+  flags: i
+  replacements: ['change', 'reshape']
+  min_strength: light
+- id: VOCAB-015
+  category: ai_vocab
+  severity: 3
+  pattern: '\bgame[ -]changer\b'
+  flags: i
+  replacements: ['big deal', 'big win']
+  min_strength: light
+- id: VOCAB-016
+  category: ai_vocab
+  severity: 2
+  pattern: '\bcutting[- ]edge\b'
+  flags: i
+  replacements: ['modern', 'latest']
+  min_strength: moderate
+- id: VOCAB-017
+  category: ai_vocab
+  severity: 2
+  pattern: '\bstate[- ]of[- ]the[- ]art\b'
+  flags: i
+  replacements: ['latest', 'top']
+  min_strength: moderate
+- id: VOCAB-018
+  category: ai_vocab
+  severity: 3
+  pattern: '\bseamless\b'
+  flags: i
+  replacements: ['smooth', 'easy']
+  min_strength: light
+- id: VOCAB-019
+  category: ai_vocab
+  severity: 2
+  pattern: '\brobust\b'
+  flags: i
+  scope: prose
+  replacements: ['solid', 'strong', 'reliable']
+  min_strength: moderate
+- id: VOCAB-020
+  category: ai_vocab
+  severity: 3
+  pattern: '\bholistic\b'
+  flags: i
+  replacements: ['overall', 'full']
+  min_strength: light
+- id: VOCAB-021
+  category: ai_vocab
+  severity: 3
+  pattern: '\bmultifaceted\b'
+  flags: i
+  replacements: ['varied', 'many-sided']
+  min_strength: light
+- id: VOCAB-022
+  category: ai_vocab
+  severity: 2
+  pattern: '\bcomprehensive\b'
+  flags: i
+  replacements: ['full', 'complete']
+  min_strength: moderate
+- id: VOCAB-023
+  category: ai_vocab
+  severity: 2
+  pattern: '\bmeticulous\b'
+  flags: i
+  replacements: ['careful']
+  min_strength: moderate
+- id: VOCAB-024
+  category: ai_vocab
+  severity: 2
+  pattern: '\bintricate\b'
+  flags: i
+  replacements: ['complex']
+  min_strength: moderate
+- id: VOCAB-025
+  category: ai_vocab
+  severity: 2
+  pattern: '\bvibrant\b'
+  flags: i
+  scope: prose
+  replacements: ['lively']
+  min_strength: moderate
+- id: VOCAB-026
+  category: ai_vocab
+  severity: 2
+  pattern: '\bbustling\b'
+  flags: i
+  replacements: ['busy']
+  min_strength: moderate
+- id: VOCAB-027
+  category: ai_vocab
+  severity: 3
+  pattern: '\btapestry\b'
+  flags: i
+  replacements: ['mix', 'range']
+- id: VOCAB-028
+  category: ai_vocab
+  severity: 3
+  pattern: '\brealm\b'
+  flags: i
+  scope: prose
+  replacements: ['area', 'field', 'world']
+  min_strength: light
+- id: VOCAB-029
+  category: ai_vocab
+  severity: 2
+  pattern: '\blandscape\b'
+  flags: i
+  scope: prose
+  replacements: ['field', 'scene']
+  min_strength: aggressive
+- id: VOCAB-030
+  category: ai_vocab
+  severity: 2
+  pattern: '\bparadigm\b'
+  flags: i
+  scope: prose
+  replacements: ['model']
+  min_strength: moderate
+- id: VOCAB-031
+  category: ai_vocab
+  severity: 3
+  pattern: '\bsynergy\b'
+  flags: i
+  replacements: ['teamwork', 'joint effort']
+  min_strength: light
+- id: VOCAB-032
+  category: ai_vocab
+  severity: 2
+  pattern: '\bplethora\b'
+  flags: i
+  replacements: ['plenty', 'lots']
+  min_strength: moderate
+- id: VOCAB-033
+  category: ai_vocab
+  severity: 2
+  pattern: '\bmyriad\b'
+  flags: i
+  replacements: ['many']
+  min_strength: moderate
+- id: VOCAB-034
+  category: ai_vocab
+  severity: 2
+  pattern: '\btreasure trove\b'
+  flags: i
+  replacements: ['rich source', 'gold mine']
+  min_strength: moderate
+- id: VOCAB-035
+  category: ai_vocab
+  severity: 2
+  pattern: '\bcornerstone\b'
+  flags: i
+  scope: prose
+  replacements: ['base', 'key part']
+  min_strength: moderate
+- id: VOCAB-036
+  category: ai_vocab
+  severity: 2
+  pattern: '\bbeacon\b'
+  flags: i
+  scope: prose
+  replacements: ['example', 'guide']
+  min_strength: moderate
+- id: VOCAB-037
+  category: ai_vocab
+  severity: 3
+  pattern: '\ba testament to\b'
+  flags: i
+  replacements: ['proof of', 'a sign of']
+  min_strength: light
+- id: VOCAB-038
+  category: ai_vocab
+  severity: 2
+  pattern: '\bunderscores?\b'
+  flags: i
+  replacements: ['show', 'highlight']
+  min_strength: moderate
+- id: VOCAB-039
+  category: ai_vocab
+  severity: 2
+  pattern: '\bpivotal\b'
+  flags: i
+  replacements: ['key', 'important']
+  min_strength: light
+- id: VOCAB-040
+  category: ai_vocab
+  severity: 2
+  pattern: '\bcrucial\b'
+  flags: i
+  replacements: ['important']
+  min_strength: moderate
+- id: VOCAB-041
+  category: ai_vocab
+  severity: 2
+  pattern: '\bvital\b'
+  flags: i
+  scope: prose
+  replacements: ['important']
+  min_strength: moderate
+- id: VOCAB-042
+  category: ai_vocab
+  severity: 2
+  pattern: '\bparamount\b'
+  flags: i
+  replacements: ['most important', 'top']
+  min_strength: moderate
+- id: VOCAB-043
+  category: ai_vocab
+  severity: 2
+  pattern: '\bprofound\b'
+  flags: i
+  scope: prose
+  replacements: ['deep', 'strong']
+  min_strength: moderate
+- id: VOCAB-044
+  category: ai_vocab
+  severity: 2
+  pattern: '\benduring\b'
+  flags: i
+  scope: prose
+  replacements: ['lasting']
+  min_strength: moderate
+- id: VOCAB-045
+  category: ai_vocab
+  severity: 2
+  pattern: '\bcherished\b'
+  flags: i
+  replacements: ['valued', 'loved']
+  min_strength: moderate
+- id: VOCAB-046
+  category: ai_vocab
+  severity: 2
+  pattern: '\bshowcases\b'
+  flags: i
+  replacements: ['show']
+  min_strength: moderate
+- id: VOCAB-047
+  category: ai_vocab
+  severity: 2
+  pattern: '\bnavigate\b'
+  flags: i
+  scope: prose
+  replacements: ['handle', 'deal with']
+  min_strength: aggressive
+- id: VOCAB-048
+  category: ai_vocab
+  severity: 2
+  pattern: '\bdeep[ -]dive\b'
+  flags: i
+  replacements: ['close look']
+  min_strength: moderate
+- id: VOCAB-049
+  category: ai_vocab
+  severity: 2
+  pattern: '\bever[- ]evolving\b'
+  flags: i
+  replacements: ['changing']
+  min_strength: moderate
+- id: VOCAB-050
+  category: ai_vocab
+  severity: 2
+  pattern: '\bfast[- ]paced\b'
+  flags: i
+  replacements: ['busy', 'fast']
+  min_strength: moderate
+- id: VOCAB-051
+  category: ai_vocab
+  severity: 2
+  pattern: '\bgroundbreaking\b'
+  flags: i
+  replacements: ['major', 'big']
+  min_strength: moderate
+- id: VOCAB-052
+  category: ai_vocab
+  severity: 2
+  pattern: '\bunparalleled\b'
+  flags: i
+  replacements: ['unmatched']
+  min_strength: moderate
+- id: VOCAB-053
+  category: ai_vocab
+  severity: 2
+  pattern: '\bunwavering\b'
+  flags: i
+  replacements: ['steady', 'firm']
+  min_strength: moderate
+- id: VOCAB-054
+  category: ai_vocab
+  severity: 3
+  pattern: '\bmoreover\b'
+  flags: i
+  replacements: ['also', 'and', 'plus']
+  min_strength: light
+- id: VOCAB-055
+  category: ai_vocab
+  severity: 3
+  pattern: '\bfurthermore\b'
+  flags: i
+  replacements: ['also', 'and', 'plus']
+  min_strength: light
+- id: VOCAB-056
+  category: ai_vocab
+  severity: 2
+  pattern: '\badditionally\b'
+  flags: i
+  replacements: ['also', 'besides', 'plus']
+  min_strength: light
+- id: VOCAB-057
+  category: ai_vocab
+  severity: 3
+  pattern: '\bin conclusion\b'
+  flags: i
+  replacements: ['so', 'overall']
+  min_strength: light
+- id: VOCAB-058
+  category: ai_vocab
+  severity: 3
+  pattern: '\bin summary\b'
+  flags: i
+  replacements: ['overall', 'in short']
+  min_strength: light
+- id: VOCAB-059
+  category: ai_vocab
+  severity: 2
+  pattern: '\bin essence\b'
+  flags: i
+  replacements: ['basically', 'at heart']
+  min_strength: light
+- id: VOCAB-060
+  category: ai_vocab
+  severity: 2
+  pattern: '\binnovative\b'
+  flags: i
+  scope: prose
+  replacements: ['new']
+  min_strength: aggressive
+- id: VOCAB-061
+  category: ai_vocab
+  severity: 2
+  pattern: '\buser[- ]friendly\b'
+  flags: i
+  replacements: ['easy to use']
+  min_strength: moderate
+- id: VOCAB-062
+  category: ai_vocab
+  severity: 2
+  pattern: '\bnext[- ]generation\b'
+  flags: i
+  replacements: ['new']
+  min_strength: moderate
+- id: VOCAB-063
+  category: ai_vocab
+  severity: 2
+  pattern: '\bbest[- ]in[- ]class\b'
+  flags: i
+  replacements: ['top']
+  min_strength: moderate
+- id: VOCAB-064
+  category: ai_vocab
+  severity: 2
+  pattern: '\bworld[- ]class\b'
+  flags: i
+  replacements: ['top']
+  min_strength: moderate
+
+  min_strength: light

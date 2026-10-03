@@ -1,0 +1,17 @@
+[
+  {
+    "key": "ctrl+shift+a ctrl+shift+s",
+    "command": "workbench.action.tasks.runTask",
+    "args": "ai-untell: Scan active file"
+  },
+  {
+    "key": "ctrl+shift+a ctrl+shift+c",
+    "command": "workbench.action.tasks.runTask",
+    "args": "ai-untell: Clean active file (in-place + backup)"
+  },
+  {
+    "key": "ctrl+shift+a ctrl+shift+d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "ai-untell: Demo"
+  }
+]

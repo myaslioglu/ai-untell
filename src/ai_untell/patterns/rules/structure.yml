@@ -1,0 +1,109 @@
+# Structural tells: copula avoidance, negative parallelisms, rule of three,
+# filler discourse markers.
+
+- id: STRUCT-001
+  category: copula_avoidance
+  severity: 2
+  pattern: '\bserves as\b'
+  flags: i
+  replacements: ['is', 'works as']
+  min_strength: light
+- id: STRUCT-002
+  category: copula_avoidance
+  severity: 2
+  pattern: '\bstands as\b'
+  flags: i
+  replacements: ['is']
+  min_strength: light
+- id: STRUCT-003
+  category: copula_avoidance
+  severity: 2
+  pattern: '\bfunctions as\b'
+  flags: i
+  replacements: ['works as']
+  min_strength: light
+- id: STRUCT-004
+  category: copula_avoidance
+  severity: 2
+  pattern: '\boperates as\b'
+  flags: i
+  replacements: ['runs as']
+  min_strength: light
+- id: STRUCT-005
+  category: copula_avoidance
+  severity: 2
+  pattern: '\bacts as\b'
+  flags: i
+  replacements: ['works as']
+  min_strength: moderate
+- id: STRUCT-006
+  category: copula_avoidance
+  severity: 1
+  pattern: '\bboasts\b'
+  flags: i
+  replacements: ['has']
+  min_strength: moderate
+- id: STRUCT-007
+  category: negative_parallelism
+  severity: 2
+  pattern: '\bnot only\b[^.!?\n]{0,80}?\bbut also\b'
+  flags: i
+  action: flag
+  note: cleaned by dedicated transform when both sides are short
+- id: STRUCT-008
+  category: negative_parallelism
+  severity: 2
+  pattern: '\bnot just\b[^.!?\n]{0,80}?\bit(?:''s| is)\b'
+  flags: i
+  action: flag
+  note: cleaned by dedicated transform when both sides are short
+- id: STRUCT-009
+  category: rule_of_three
+  severity: 1
+  pattern: '\b\w{4,}ing, \w{4,}ing, and \w{4,}ing\b'
+  flags: i
+  action: flag
+  note: gerund triplet - classic rule-of-three cadence
+- id: STRUCT-010
+  category: rule_of_three
+  severity: 1
+  pattern: '\b\w+, \w+, and \w+\b'
+  flags: i
+  action: flag
+  scope: prose
+  note: weak signal; only counted with other tells
+- id: STRUCT-011
+  category: ai_vocab
+  severity: 2
+  pattern: '\bit(?:''s| is) (?:important|worth) (?:to note|noting)(?: that)?'
+  flags: i
+  action: flag
+  note: filler lead-in; flagged, left for human review
+- id: STRUCT-012
+  category: ai_vocab
+  severity: 2
+  pattern: '\bin today''s (?:fast[- ]paced|digital|modern|connected) (?:world|age|era)\b'
+  flags: i
+  replacements: ['Today']
+  min_strength: light
+- id: STRUCT-013
+  category: ai_vocab
+  severity: 1
+  pattern: '\ba wide range of\b'
+  flags: i
+  replacements: ['many', 'a range of']
+  min_strength: moderate
+- id: STRUCT-014
+  category: ai_vocab
+  severity: 1
+  pattern: '\ba diverse (?:range|array) of\b'
+  flags: i
+  replacements: ['many']
+  min_strength: moderate
+- id: STRUCT-015
+  category: ai_vocab
+  severity: 2
+  pattern: '\bwhen it comes to\b'
+  flags: i
+  replacements: ['with', 'for']
+  min_strength: aggressive
