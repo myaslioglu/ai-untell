@@ -290,3 +290,7 @@ ağsız sandbox'ta sorunsuz çalışır.
 ## Lisans
 
 MIT. Ayrıntılar [LICENSE](LICENSE) dosyasında.
+
+## Acknowledgement
+
+Claude Code (Anthropic) assisted with parts of this repository: writing and refactoring code, running builds and tests, and preparing commits. The author of record for every commit is the repository owner. AI assistance is acknowledged here, not as a co-author.

@@ -9,5 +9,10 @@
   },
   "enabledPlugins": {
     "ai-untell@ai-untell": true
-  }
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeCoAuthoredBy": false
 }
